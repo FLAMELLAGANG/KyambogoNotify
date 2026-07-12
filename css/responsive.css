@@ -1,0 +1,354 @@
+/* ═══════════════════════════════════════════════════════════════
+   KYAMBOGO NOTIFY — responsive.css  v3
+   Drop-in file. Link on every page after tailwind.offline.css:
+       <link rel="stylesheet" href="css/responsive.css">
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. NUCLEAR OVERFLOW FIX */
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: hidden; max-width: 100%; }
+body { overflow-x: hidden; max-width: 100vw; width: 100%; }
+img, video, iframe, embed, object, svg { max-width: 100%; height: auto; display: block; }
+p,h1,h2,h3,h4,h5,h6,span,a,li,td,th { overflow-wrap: break-word; word-break: break-word; min-width: 0; }
+
+/* 2. SEARCH BARS — fix cut-off on right side (home, campus-news, notices) */
+@media (max-width: 767px) {
+  .flex.gap-0 { width: 100% !important; max-width: 100% !important; }
+  .flex.gap-0 input { flex: 1 1 0% !important; min-width: 0 !important; width: 0 !important; }
+  .flex.gap-0 button { flex-shrink: 0 !important; white-space: nowrap !important; }
+}
+
+/* 3. NAV HAMBURGER DRAWER */
+.kyu-mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(26,28,28,0.55); z-index: 998; backdrop-filter: blur(3px); }
+.kyu-mobile-overlay.kyu-open { display: block; }
+.kyu-mobile-drawer { position: fixed; top: 0; right: -100%; width: min(300px,82vw); height: 100%; background: #fff; z-index: 999; display: flex; flex-direction: column; padding: 1.25rem 1rem 2rem; gap: 0.25rem; transition: right 0.28s ease; overflow-y: auto; box-shadow: -8px 0 32px rgba(0,0,0,0.12); }
+.kyu-mobile-drawer.kyu-open { right: 0; }
+.kyu-drawer-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 0.5rem; border-bottom: 2px solid #ffe07e; }
+.kyu-drawer-brand { font-size: .75rem; font-weight: 800; letter-spacing: .1em; color: #725c00; text-transform: uppercase; }
+.kyu-drawer-close { background: none; border: none; cursor: pointer; padding: 4px; color: #5f5e5e; display: flex; align-items: center; }
+.kyu-mobile-drawer a.kyu-drawer-link { display: block; padding: .8rem .75rem; font-size: .8125rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; text-decoration: none; color: #5f5e5e; border-radius: 8px; transition: color .15s, background .15s; }
+.kyu-mobile-drawer a.kyu-drawer-link:hover, .kyu-mobile-drawer a.kyu-drawer-link.kyu-active { color: #725c00; background: rgba(114,92,0,0.07); }
+.kyu-drawer-auth { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid rgba(207,198,175,0.35); }
+.kyu-drawer-auth-btn { display: block; width: 100%; padding: .75rem 1rem; background: #1a1c1c; color: #ffe07e; border: none; border-radius: 100px; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; text-align: center; }
+.kyu-hamburger { display: none; align-items: center; justify-content: center; width: 38px; height: 38px; background: none; border: 1px solid rgba(207,198,175,0.45); border-radius: 8px; cursor: pointer; flex-shrink: 0; }
+@media (max-width: 767px) {
+  .kyu-hamburger { display: flex; }
+  nav .hidden.md\:flex, nav .hidden.md\:block { display: none !important; }
+  nav.fixed, header.fixed { width: 100vw !important; max-width: 100vw !important; overflow: hidden !important; }
+  nav.fixed > div, header.fixed > div { width: 100% !important; max-width: 100% !important; padding-left: 1rem !important; padding-right: 1rem !important; display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: nowrap !important; overflow: hidden !important; }
+}
+
+/* 4. HOME PAGE */
+@media (max-width: 767px) {
+  /* Hero: single column */
+  section.grid, section[class*="grid-cols"] { display: flex !important; flex-direction: column !important; width: 100% !important; overflow: hidden !important; }
+  section.grid > div:nth-child(2):not(:first-child) { display: none !important; }
+  section.grid > div:first-child { width: 100% !important; max-width: 100% !important; padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+  section.grid h1 { font-size: clamp(36px, 10vw, 72px) !important; line-height: 1.05 !important; }
+  /* Stats row wrap */
+  .flex.gap-stack-lg { flex-wrap: wrap !important; gap: 1.25rem !important; }
+  /* CTA buttons stack */
+  section .flex.flex-wrap.gap-4 { flex-direction: column !important; width: 100% !important; }
+  section .flex.flex-wrap.gap-4 > a, section .flex.flex-wrap.gap-4 > button { width: 100% !important; justify-content: center !important; }
+  /* Featured grid: 1 col */
+  #featured-grid { grid-template-columns: 1fr !important; width: 100% !important; }
+  #featured-grid > a { width: 100% !important; min-height: 200px !important; }
+  /* Category grids: 1 col */
+  #urgent-deadlines-row, #cat-examinations, #cat-finance, #cat-student-life { grid-template-columns: 1fr !important; width: 100% !important; }
+  /* Subscribe bar full width */
+  section .flex.gap-0 { width: 100% !important; max-width: 100% !important; }
+  /* No parallax on mobile (iOS bug) */
+  [style*="background-attachment: fixed"], [style*="background-attachment:fixed"] { background-attachment: scroll !important; }
+}
+/* Chip scroll */
+.overflow-x-auto { -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.overflow-x-auto::-webkit-scrollbar { display: none; }
+
+/* 5. NOTICES PAGE */
+.editorial-grid { display: grid !important; grid-template-columns: 1fr !important; gap: 1.5rem !important; width: 100% !important; }
+@media (min-width: 1024px) { .editorial-grid { grid-template-columns: 260px 1fr !important; gap: 3rem !important; } }
+@media (max-width: 1023px) {
+  .editorial-grid > aside { display: none; }
+  .editorial-grid > aside.sidebar-visible { display: block; background: #f9f9f9; border: 1px solid rgba(207,198,175,0.3); border-radius: 12px; padding: 1.25rem; }
+}
+@media (min-width: 1024px) { .editorial-grid > aside { display: block !important; } }
+.kyu-filter-toggle { display: none; align-items: center; gap: 6px; padding: .5rem 1rem; border: 1px solid rgba(207,198,175,0.5); border-radius: 100px; background: #fff; font-size: .6875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; color: #5f5e5e; margin-bottom: 1rem; }
+@media (max-width: 1023px) { .kyu-filter-toggle { display: flex; } }
+@media (min-width: 1024px) { .kyu-filter-toggle { display: none !important; } }
+@media (max-width: 767px) {
+  #notices-grid { grid-template-columns: 1fr !important; width: 100% !important; }
+  #notices-grid > * { width: 100% !important; max-width: 100% !important; overflow: hidden !important; }
+  #pagination { flex-wrap: wrap !important; gap: .5rem !important; }
+}
+
+/* 6. CAMPUS NEWS */
+.magazine-grid { display: grid !important; grid-template-columns: 1fr !important; gap: 2rem !important; width: 100% !important; }
+@media (min-width: 1024px) { .magazine-grid { grid-template-columns: 2fr 1fr !important; gap: 2.5rem !important; } }
+@media (max-width: 767px) {
+  /* Article card image+text rows: stack vertically */
+  .article-card .flex, [class*="article"] .flex { flex-direction: column !important; width: 100% !important; }
+  .article-card img, [class*="article"] img { width: 100% !important; max-width: 100% !important; height: 180px !important; object-fit: cover !important; }
+  .article-card .flex > div, [class*="article"] .flex > div { width: 100% !important; min-width: 0 !important; }
+  /* Tab strip scroll */
+  .flex.gap-2.border-b, .flex.gap-1.border-b { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none !important; flex-wrap: nowrap !important; }
+  .flex.gap-2.border-b::-webkit-scrollbar { display: none; }
+  .flex.gap-2.border-b button, .flex.gap-1.border-b button { flex-shrink: 0 !important; }
+  /* Headline clamp */
+  header h1 { font-size: clamp(28px, 9vw, 56px) !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+}
+
+/* 7. DISCOVER PAGE */
+@media (max-width: 767px) {
+  .flex.gap-0.max-w-xl { max-width: 100% !important; width: 100% !important; }
+  .grid.grid-cols-3 { gap: 0.25rem !important; }
+  .grid.grid-cols-3 > div { padding: 0.5rem !important; }
+  #urgent-notices-grid, #recent-notices-grid { grid-template-columns: 1fr !important; }
+}
+
+/* 8. NOTICE DETAIL */
+@media (max-width: 767px) {
+  main .max-w-\[800px\], main .max-w-\[720px\] { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+  #related-notices .grid { grid-template-columns: 1fr !important; }
+  .w-full h1[style*="font-size:120px"], .w-full h1[style*="font-size: 120px"] { font-size: clamp(40px, 15vw, 90px) !important; }
+}
+
+/* 9. VISITOR PORTAL */
+@media (max-width: 767px) {
+  .grid.grid-cols-2 { width: 100% !important; max-width: 100% !important; grid-template-columns: 1fr 1fr !important; }
+  main, [role="main"] { width: 100% !important; max-width: 100vw !important; overflow-x: hidden !important; }
+  .grid.grid-cols-1.md\:grid-cols-2 { grid-template-columns: 1fr !important; }
+  #user-badge span#user-name { display: none !important; }
+}
+
+/* 10. ADMIN DASHBOARD */
+@media (max-width: 767px) {
+  .grid.grid-cols-2.lg\:grid-cols-4, .grid.grid-cols-2.md\:grid-cols-4 { grid-template-columns: 1fr 1fr !important; width: 100% !important; }
+  .grid.grid-cols-1.lg\:grid-cols-12 { grid-template-columns: 1fr !important; }
+  .lg\:col-span-8, .lg\:col-span-4 { grid-column: span 1 !important; }
+  header .flex.gap-4 { flex-direction: column !important; width: 100% !important; }
+  header .flex.gap-4 > button, header .flex.gap-4 > a { width: 100% !important; justify-content: center !important; }
+}
+@media (max-width: 1023px) {
+  div:has(> table), .overflow-x-auto { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; max-width: 100vw !important; }
+  table { min-width: 520px; width: 100%; }
+}
+
+/* 11. ADMIN LOGIN */
+@media (max-width: 1023px) {
+  .hidden.lg\:flex { display: none !important; }
+  body.flex > div.flex-1 { width: 100% !important; }
+}
+
+/* 12. AUTH MODAL + TOAST */
+@media (max-width: 480px) {
+  #kyu-auth-modal { align-items: flex-end !important; }
+  #kyu-auth-modal > div { width: 100% !important; max-width: 100% !important; border-radius: 1.25rem 1.25rem 0 0 !important; padding: 1.5rem !important; }
+  #kyu-toast-container { right: .75rem !important; left: .75rem !important; bottom: 1rem !important; max-width: 100% !important; }
+  #kyu-toast-container > div { width: 100% !important; min-width: unset !important; }
+  .ticker-wrap .ticker { font-size: 10px !important; }
+}
+
+/* 13. FOOTER */
+@media (max-width: 767px) {
+  footer .grid.grid-cols-1.md\:grid-cols-4, footer .grid.grid-cols-2.sm\:grid-cols-3 { grid-template-columns: 1fr 1fr !important; }
+  footer .col-span-2 { grid-column: span 2 !important; }
+  footer .flex.gap-8 { flex-wrap: wrap !important; gap: .75rem !important; }
+}
+
+/* 14. SAFE AREA (iPhone notch) */
+nav.fixed, header.fixed { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+
+/* 15. CAMPUS NEWS — article cards: image on top, text below on mobile */
+@media (max-width: 767px) {
+  /* The card's inner flex row: switch to column (image top, text bottom) */
+  .article-card > div[style*="display:flex"] {
+    flex-direction: column !important;
+  }
+
+  /* Image container: show it (was display:none on mobile), full width, fixed height */
+  .article-card > div[style*="display:flex"] > div:first-child {
+    display: block !important;   /* override the inline display:none */
+    width: 100% !important;
+    height: 200px !important;
+    flex-shrink: 0 !important;
+    min-height: unset !important;
+    overflow: hidden !important;
+  }
+
+  /* Image inside: cover the full container */
+  .article-card > div[style*="display:flex"] > div:first-child img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Text panel: full width, comfortable padding */
+  .article-card > div[style*="display:flex"] > div:last-child {
+    width: 100% !important;
+    padding: 1rem 1.25rem !important;
+  }
+
+  /* Article title: allow normal wrapping, no cramping */
+  .article-card h3 {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Meta row (READ arrow): keep on one line */
+  .article-card > div[style*="display:flex"] > div:last-child > div:last-child {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   16. RESPONSIVE TABLES — stack as cards on mobile
+   Targets: admin-dashboard (Moderation Queue, Published Notices)
+            visitor-portal (Submission History)
+   No HTML/JS changes required.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 767px) {
+
+  /* Hide the table header row entirely on mobile — labels move inline */
+  table thead {
+    display: none !important;
+  }
+
+  /* Table, body, rows, cells: break out of table layout into block layout */
+  table, table tbody, table tr, table td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Each row becomes a card */
+  table tr {
+    background: #ffffff;
+    border: 1px solid rgba(207,198,175,0.3) !important;
+    border-radius: 12px !important;
+    margin-bottom: 12px !important;
+    padding: 14px 16px !important;
+    overflow: hidden !important;
+  }
+
+  /* Cells: full width, remove table padding, stack vertically */
+  table td {
+    padding: 6px 0 !important;
+    border: none !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-align: left !important;
+  }
+
+  /* Force-show any cell that was hidden via md:table-cell (category/date) */
+  table td.md\:table-cell,
+  table td[class*="md:table-cell"] {
+    display: block !important;
+  }
+
+  /* Date cells: small, muted, shown as a line above the title */
+  table td:first-child[style*="white-space:nowrap"] {
+    font-size: 11px !important;
+    color: #7e7663 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Category pill cells: inline-block so pill doesn't stretch full width */
+  table td span[style*="border-radius:100px"],
+  table td span[style*="border-radius: 100px"] {
+    display: inline-flex !important;
+    width: auto !important;
+  }
+
+  /* Action button rows: wrap nicely, don't force single line */
+  table td div[style*="display:flex"] {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  table td div[style*="display:flex"] button,
+  table td div[style*="display:flex"] a {
+    flex: 1 1 auto !important;
+    min-width: 80px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Long titles: wrap normally, never letter-stack */
+  table td p {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Status/category pills: keep text on one line within the pill */
+  table td span {
+    white-space: nowrap !important;
+  }
+}
+
+/* Tables on tablet (768–1023px): allow horizontal scroll instead of squashing */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .overflow-x-auto,
+  div:has(> table) {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  table {
+    min-width: 640px;
+  }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   17. ADMIN DASHBOARD — header & nav alignment on mobile
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 767px) {
+  /* Section headers with a count badge (e.g. "Moderation Queue · 1 pending"):
+     stack the title and badge instead of clipping the badge off-screen */
+  h2 + span[id*="count"],
+  div:has(> h2) {
+    flex-wrap: wrap !important;
+  }
+
+  .flex.items-center.justify-between:has(h2) {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  /* "X pending" / "X notices" / "X submissions" badges: don't clip */
+  span[id$="-count"] {
+    white-space: normal !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   18. ADMIN/VISITOR NAV — KYAMBOGO NOTIFY title vs LOGOUT button
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 480px) {
+  /* Shrink the "KYAMBOGO NOTIFY" wordmark so LOGOUT + hamburger fit */
+  nav.fixed h1,
+  header.fixed h1,
+  nav.fixed .font-headline-sm,
+  header.fixed .font-headline-sm {
+    font-size: 15px !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  /* LOGOUT button: tighter padding on small screens */
+  nav.fixed button[onclick*="logout"],
+  nav.fixed button[onclick*="Logout"],
+  header.fixed button[onclick*="logout"],
+  header.fixed button[onclick*="Logout"] {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+  }
+}

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<link rel="stylesheet" href="css/tailwind.offline.css">
+<link rel="stylesheet" href="css/responsive.css"> 
+  <!-- Material Symbols: loads from CDN when online, degrades gracefully offline -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"></noscript>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Admin Dashboard | Kyambogo Notify</title>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+.glass-panel{backdrop-filter:blur(12px);background:rgba(255,255,255,0.8);}
+.no-scrollbar::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+
+<!-- Top Nav -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/30" id="admin-nav">
+  <div class="max-w-[1440px] mx-auto px-gutter py-4 flex justify-between items-center">
+    <div class="flex items-center gap-8">
+      <span class="text-body-lg font-headline-md font-bold tracking-tighter text-on-background">Kyambogo Notify</span>
+      <div class="hidden md:flex gap-8">
+        <a class="text-secondary hover:text-on-background transition-colors font-label-caps text-label-caps" href="discover.html">Discover</a>
+        <a class="text-secondary hover:text-on-background transition-colors font-label-caps text-label-caps" href="home.html">Home</a>
+        <a class="text-secondary hover:text-on-background transition-colors font-label-caps text-label-caps" href="notices.html">Notices</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="font-label-caps text-label-caps text-primary hidden md:block">ADMIN SESSION ACTIVE</span>
+      <button onclick="adminLogout()" class="flex items-center gap-2 px-4 py-2 border border-error text-error font-label-caps text-label-caps hover:bg-error hover:text-on-error transition-all">
+        LOGOUT <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-32 pb-section-gap max-w-[1440px] mx-auto px-gutter">
+  <!-- Dashboard Header -->
+  <header class="mb-stack-lg border-b border-outline-variant/30 pb-stack-md flex flex-col md:flex-row md:items-end md:justify-between gap-stack-md">
+    <div>
+      <div class="flex items-center gap-2 mb-2"><div class="w-3 h-3 bg-primary"></div><span class="font-label-caps text-label-caps text-primary">ADMINISTRATION CONSOLE</span></div>
+      <h1 class="font-headline-lg text-headline-lg">System Oversight</h1>
+    </div>
+    <div class="flex gap-4">
+      <button onclick="window.location.href='notices.html?admin_edit=true'" class="px-8 py-4 border border-outline text-on-background font-label-caps text-label-caps flex items-center gap-3 hover:bg-surface-container transition-all">
+        Edit Notice Board
+      </button>
+      <button onclick="openBroadcastModal()" class="px-8 py-4 bg-primary text-on-primary font-label-caps text-label-caps flex items-center gap-3 hover:opacity-90 transition-all">
+        Broadcast Notice <span class="material-symbols-outlined" style="font-size:18px;">campaign</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- KPI Strip -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-stack-lg">
+    <div class="bg-surface-container p-6">
+      <span class="font-label-caps text-label-caps text-secondary block mb-2">TOTAL NOTICES</span>
+      <p id="kpi-notices" class="font-headline-md text-headline-md font-bold" data-countup="0">0</p>
+    </div>
+    <div class="bg-surface-container p-6">
+      <span class="font-label-caps text-label-caps text-secondary block mb-2">PENDING REVIEW</span>
+      <p id="kpi-pending" class="font-headline-md text-headline-md font-bold" style="color:#725c00;">0</p>
+    </div>
+    <div class="bg-surface-container p-6">
+      <span class="font-label-caps text-label-caps text-secondary block mb-2">APPROVED TODAY</span>
+      <p id="kpi-approved" class="font-headline-md text-headline-md font-bold" style="color:#1a7c3a;">0</p>
+    </div>
+    <div class="bg-surface-container p-6">
+      <span class="font-label-caps text-label-caps text-secondary block mb-2">TOTAL USERS</span>
+      <p class="font-headline-md text-headline-md font-bold" data-countup="247">0</p>
+    </div>
+  </div>
+
+  <!-- Main Grid: Queue + Sidebar -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-md">
+    <!-- Moderation Queue -->
+    <section class="lg:col-span-8">
+      <div class="flex justify-between items-center mb-stack-md">
+        <h2 class="font-headline-md text-headline-md">Moderation Queue</h2>
+        <span id="queue-count" class="font-label-caps text-label-caps text-secondary"></span>
+      </div>
+      <div class="border border-outline-variant/30 overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-outline-variant/30 bg-surface-container-low">
+              <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">DATE</th>
+              <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">SUBMISSION</th>
+              <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary hidden md:table-cell">CATEGORY</th>
+              <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">STATUS</th>
+              <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="queue-tbody"></tbody>
+        </table>
+        <div id="queue-empty" style="display:none;text-align:center;padding:48px;color:#5f5e5e;">
+          <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:12px;opacity:0.3;">done_all</span>
+          <p style="font-weight:600;">Queue is clear</p>
+          <p style="font-size:14px;">All submissions have been moderated.</p>
+        </div>
+      </div>
+
+      <!-- Published Notices Board -->
+      <div class="mt-stack-lg">
+        <div class="flex justify-between items-center mb-stack-md">
+          <h2 class="font-headline-md text-headline-md">Published Notices</h2>
+          <span id="notices-board-count" class="font-label-caps text-label-caps text-secondary"></span>
+        </div>
+        <div class="border border-outline-variant/30 overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-outline-variant/30 bg-surface-container-low">
+                <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">NOTICE</th>
+                <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary hidden md:table-cell">CATEGORY</th>
+                <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary hidden md:table-cell">DATE</th>
+                <th class="text-left py-5 px-6 font-label-caps text-label-caps text-secondary">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="notices-board-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-4 space-y-stack-md">
+      <!-- System Status -->
+      <div class="bg-tertiary-fixed p-8">
+        <span class="font-label-caps text-label-caps text-on-tertiary-container block mb-4">SYSTEM STATUS</span>
+        <div class="flex items-center gap-3 mb-6"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="font-bold text-body-md">API Gateway Stable</span></div>
+        <div class="space-y-4">
+          <div class="p-4 bg-background/50 border border-outline-variant/20">
+            <span class="text-label-caps font-label-caps text-secondary block mb-1">LAST BACKUP</span>
+            <span class="text-body-md" id="last-backup">Loading...</span>
+          </div>
+          <div class="p-4 bg-background/50 border border-outline-variant/20">
+            <span class="text-label-caps font-label-caps text-secondary block mb-1">SERVER LOAD</span>
+            <div class="w-full bg-surface-container h-2 mt-2 rounded-full overflow-hidden">
+              <div id="server-load-bar" class="bg-primary h-full rounded-full transition-all duration-1000" style="width:0%"></div>
+            </div>
+            <span id="server-load-pct" class="text-xs text-secondary mt-1 block">0%</span>
+          </div>
+          <div class="p-4 bg-background/50 border border-outline-variant/20">
+            <span class="text-label-caps font-label-caps text-secondary block mb-1">SESSION</span>
+            <span class="text-body-md font-bold text-primary">kyu_admin</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direct Navigation -->
+      <div class="p-8 border border-outline">
+        <span class="font-label-caps text-label-caps text-secondary block mb-4 uppercase">Direct Navigation</span>
+        <ul class="space-y-4">
+          <li><a href="discover.html" class="flex justify-between items-center group font-bold py-2 border-b border-outline-variant/30 hover:border-primary transition-all text-body-md">
+            <span>Access Notice Board as a visitor ↗</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="font-size:18px;">arrow_forward</span>
+          </a></li>
+          <li><a href="notices.html" class="flex justify-between items-center group font-bold py-2 border-b border-outline-variant/30 hover:border-primary transition-all text-body-md">
+            <span>Notices Board</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="font-size:18px;">campaign</span>
+          </a></li>
+          <li><button onclick="showToast('Security settings panel coming soon.','info')" class="w-full flex justify-between items-center group font-bold py-2 border-b border-outline-variant/30 hover:border-primary transition-all text-body-md text-left">
+            <span>Security Settings</span>
+            <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
+          </button></li>
+        </ul>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="p-8 border border-outline">
+        <span class="font-label-caps text-label-caps text-secondary block mb-4">RECENT ACTIVITY</span>
+        <div id="activity-log" class="space-y-3"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Architectural Visual -->
+  <section class="mt-section-gap relative h-[400px] w-full overflow-hidden bg-on-tertiary-fixed">
+    <img class="w-full h-full object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000" src="images/concept2.png" alt="">
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="max-w-4xl text-center">
+        <span class="font-label-caps text-label-caps text-primary mb-8 block tracking-[0.4em]">INSTITUTIONAL INTEGRITY</span>
+        <h2 class="text-white font-display-xl leading-none mb-8" style="font-size:clamp(48px,8vw,100px);">Architecting Excellence.</h2>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-on-tertiary-fixed text-primary-fixed pt-section-gap pb-10">
+  <div class="max-w-[1440px] mx-auto px-gutter">
+    <div class="border-t border-primary-fixed/10 pt-10 flex justify-between items-center">
+      <p class="text-label-caps font-label-caps opacity-60">© 2026 Kyambogo Notify. Administration Console.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Broadcast Modal -->
+<div id="broadcast-modal" style="display:none;position:fixed;inset:0;background:rgba(26,28,28,0.7);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:4px;padding:40px;max-width:560px;width:calc(100% - 48px);max-height:90vh;overflow-y:auto;font-family:'Plus Jakarta Sans',sans-serif;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div><p style="font-size:11px;letter-spacing:0.1em;font-weight:700;color:#725c00;margin:0 0 6px;">ADMINISTRATION</p><h2 style="font-size:24px;font-weight:700;margin:0;">Broadcast Notice</h2></div>
+      <button onclick="closeBroadcastModal()" style="background:none;border:none;cursor:pointer;"><span class="material-symbols-outlined" style="font-size:24px;color:#5f5e5e;">close</span></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:8px;">TITLE *</label>
+        <input id="bc-title" type="text" placeholder="Notice title" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box;focus:outline:none;">
+        <p id="bc-title-error" style="display:none;color:#ba1a1a;font-size:12px;margin-top:4px;"></p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:8px;">CATEGORY *</label>
+          <select id="bc-category" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;box-sizing:border-box;">
+            <option value="">Select...</option>
+            <option>Examinations</option><option>Administration</option><option>Finance</option>
+            <option>Academics</option><option>Student Life</option><option>Sports & Events</option>
+            <option>Careers</option><option>Health & Welfare</option><option>Research & Innovation</option>
+          </select>
+          <p id="bc-category-error" style="display:none;color:#ba1a1a;font-size:12px;margin-top:4px;"></p>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:8px;">URGENCY</label>
+          <select id="bc-urgency" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;box-sizing:border-box;">
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:8px;">DEPARTMENT</label>
+        <input id="bc-dept" type="text" placeholder="e.g. Academic Registrar" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:8px;">NOTICE BODY *</label>
+        <textarea id="bc-body" rows="6" placeholder="Full notice content..." style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+        <p id="bc-body-error" style="display:none;color:#ba1a1a;font-size:12px;margin-top:4px;"></p>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button onclick="closeBroadcastModal()" style="flex:1;padding:14px;border:1px solid #cfc6af;background:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;">CANCEL</button>
+        <button onclick="publishBroadcast()" style="flex:2;padding:14px;background:#725c00;color:#fff;border:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">PUBLISH NOTICE <span class="material-symbols-outlined" style="font-size:16px;">campaign</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div id="approve-modal" style="display:none;position:fixed;inset:0;background:rgba(26,28,28,0.7);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:4px;padding:40px;max-width:560px;width:calc(100% - 48px);max-height:90vh;overflow-y:auto;font-family:'Plus Jakarta Sans',sans-serif;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div><p style="font-size:11px;letter-spacing:0.1em;font-weight:700;color:#1a7c3a;margin:0 0 6px;">MODERATION</p><h2 style="font-size:24px;font-weight:700;margin:0;">Review &amp; Publish</h2></div>
+      <button onclick="closeApproveModal()" style="background:none;border:none;cursor:pointer;"><span class="material-symbols-outlined" style="font-size:24px;color:#5f5e5e;">close</span></button>
+    </div>
+    <p style="font-size:14px;color:#5f5e5e;margin-bottom:20px;">Review the submission below. You may edit any field before publishing.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">TITLE</label>
+        <input id="ap-title" type="text" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">CATEGORY</label>
+        <input id="ap-category" type="text" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">SUBMITTED BY</label>
+        <input id="ap-submitter" type="text" readonly style="width:100%;border:1px solid #e2e2e2;border-radius:4px;padding:10px 14px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;background:#f3f3f4;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">DESCRIPTION</label>
+        <textarea id="ap-body" rows="5" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+      </div>
+      <input type="hidden" id="ap-sub-id">
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button onclick="closeApproveModal()" style="flex:1;padding:14px;border:1px solid #cfc6af;background:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;">CANCEL</button>
+        <button onclick="confirmApprove()" style="flex:2;padding:14px;background:#1a7c3a;color:#fff;border:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">APPROVE &amp; PUBLISH <span class="material-symbols-outlined" style="font-size:16px;">check_circle</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="reject-modal" style="display:none;position:fixed;inset:0;background:rgba(26,28,28,0.7);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:4px;padding:40px;max-width:480px;width:calc(100% - 48px);font-family:'Plus Jakarta Sans',sans-serif;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div><p style="font-size:11px;letter-spacing:0.1em;font-weight:700;color:#ba1a1a;margin:0 0 6px;">MODERATION</p><h2 style="font-size:24px;font-weight:700;margin:0;">Rejection Reason</h2></div>
+      <button onclick="closeRejectModal()" style="background:none;border:none;cursor:pointer;"><span class="material-symbols-outlined" style="font-size:24px;color:#5f5e5e;">close</span></button>
+    </div>
+    <p id="reject-notice-title" style="font-weight:700;font-size:16px;margin-bottom:16px;color:#1a1c1c;"></p>
+    <textarea id="reject-reason" rows="4" placeholder="Provide a clear reason for rejection (this will be sent to the submitter)..." style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:12px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;resize:vertical;box-sizing:border-box;margin-bottom:8px;"></textarea>
+    <p id="reject-reason-error" style="display:none;color:#ba1a1a;font-size:12px;margin-bottom:12px;"></p>
+    <input type="hidden" id="rj-sub-id">
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeRejectModal()" style="flex:1;padding:14px;border:1px solid #cfc6af;background:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;">CANCEL</button>
+      <button onclick="confirmReject()" style="flex:2;padding:14px;background:#ba1a1a;color:#fff;border:none;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">CONFIRM REJECTION <span class="material-symbols-outlined" style="font-size:16px;">cancel</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="delete-modal" style="display:none;position:fixed;inset:0;background:rgba(26,28,28,0.7);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:4px;padding:40px;max-width:440px;width:calc(100% - 48px);font-family:'Plus Jakarta Sans',sans-serif;text-align:center;">
+    <span class="material-symbols-outlined" style="font-size:48px;color:#ba1a1a;display:block;margin-bottom:16px;">delete_forever</span>
+    <h2 style="font-size:22px;font-weight:700;margin:0 0 12px;">Delete Notice?</h2>
+    <p id="delete-notice-title" style="color:#5f5e5e;margin-bottom:24px;font-size:15px;"></p>
+    <p style="font-size:13px;color:#ba1a1a;margin-bottom:24px;">This action cannot be undone.</p>
+    <input type="hidden" id="del-notice-id">
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeDeleteModal()" style="flex:1;padding:14px;border:1px solid #cfc6af;background:none;font-weight:700;font-size:12px;cursor:pointer;">CANCEL</button>
+      <button onclick="confirmDelete()" style="flex:1;padding:14px;background:#ba1a1a;color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;">DELETE</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+/* ── AUTH GUARD ── */
+document.addEventListener('DOMContentLoaded', function() {
+  if (!isAdmin()) { window.location.href = 'discover.html'; return; }
+  initDashboard();
+});
+
+var activityLog = [];
+
+function initDashboard() {
+  renderKPIs();
+  renderQueue();
+  renderNoticesBoard();
+  animateServerLoad();
+  document.getElementById('last-backup').textContent = new Date(Date.now()-3*3600000).toLocaleString();
+  initCountUps();
+}
+
+function renderKPIs() {
+  var pending = KyuDB.submissions.filter(s=>s.status==='UNDER REVIEW').length;
+  countUp(document.getElementById('kpi-notices'), KyuDB.notices.length, 1000);
+  countUp(document.getElementById('kpi-pending'), pending, 800);
+  countUp(document.getElementById('kpi-approved'), KyuDB.submissions.filter(s=>s.status==='APPROVED').length, 900);
+}
+
+function animateServerLoad() {
+  var load = Math.floor(20 + Math.random()*45);
+  setTimeout(function() {
+    document.getElementById('server-load-bar').style.width = load+'%';
+    document.getElementById('server-load-pct').textContent = load+'%';
+  }, 600);
+}
+
+function renderQueue() {
+  var pending = KyuDB.submissions.filter(s=>s.status==='UNDER REVIEW');
+  document.getElementById('queue-count').textContent = pending.length + ' pending';
+  var tbody = document.getElementById('queue-tbody');
+  var empty = document.getElementById('queue-empty');
+  if (!pending.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  tbody.innerHTML = pending.map(function(s) {
+    return '<tr style="border-bottom:1px solid #cfc6af20;transition:background 0.2s;" onmouseover="this.style.background=\'#f3f3f4\'" onmouseout="this.style.background=\'none\'">' +
+      '<td style="padding:20px 24px;font-size:14px;color:#5f5e5e;white-space:nowrap;">'+formatDate(s.date)+'</td>' +
+      '<td style="padding:20px 24px;"><p style="font-weight:700;font-size:15px;margin:0 0 2px;">'+s.title+'</p><p style="font-size:13px;color:#5f5e5e;margin:0;">By '+s.userName+'</p></td>' +
+      '<td style="padding:20px 24px;display:none;" class="md:table-cell"><span style="font-size:10px;font-weight:700;background:#e5e2e1;color:#1c1b1b;padding:3px 10px;border-radius:100px;letter-spacing:0.06em;">'+s.category.toUpperCase()+'</span></td>' +
+      '<td style="padding:20px 24px;"><span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;background:#ffe07e;color:#231b00;padding:3px 10px;border-radius:100px;letter-spacing:0.06em;width:fit-content;"><span style="width:6px;height:6px;background:#725c00;border-radius:100px;display:inline-block;"></span>UNDER REVIEW</span></td>' +
+      '<td style="padding:20px 24px;">' +
+        '<div style="display:flex;gap:12px;">' +
+          '<button onclick="openApproveModal(\''+s.id+'\')" style="font-weight:700;font-size:11px;letter-spacing:0.08em;color:#1a7c3a;background:none;border:1px solid #1a7c3a;padding:6px 14px;cursor:pointer;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.background=\'#1a7c3a\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'none\';this.style.color=\'#1a7c3a\'">APPROVE</button>' +
+          '<button onclick="openRejectModal(\''+s.id+'\')" style="font-weight:700;font-size:11px;letter-spacing:0.08em;color:#ba1a1a;background:none;border:1px solid #ba1a1a;padding:6px 14px;cursor:pointer;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.background=\'#ba1a1a\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'none\';this.style.color=\'#ba1a1a\'">REJECT</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+  document.querySelectorAll('#queue-tbody td:nth-child(3)').forEach(c=>c.style.display='table-cell');
+}
+
+function renderNoticesBoard() {
+  var notices = KyuDB.notices.slice(0,20);
+  document.getElementById('notices-board-count').textContent = KyuDB.notices.length + ' notices';
+  var tbody = document.getElementById('notices-board-tbody');
+  tbody.innerHTML = notices.map(function(n) {
+    return '<tr id="row-'+n.id+'" style="border-bottom:1px solid #cfc6af20;transition:background 0.2s;" onmouseover="this.style.background=\'#f3f3f4\'" onmouseout="this.style.background=\'none\'">' +
+      '<td style="padding:16px 24px;"><p style="font-weight:700;font-size:14px;margin:0 0 2px;line-height:1.3;">'+n.title+'</p><p style="font-size:12px;color:#5f5e5e;margin:0;">'+n.author+'</p></td>' +
+      '<td style="padding:16px 24px;display:none;" class="md:table-cell"><span style="font-size:10px;font-weight:700;background:#eeeeee;color:#1a1c1c;padding:2px 8px;border-radius:100px;">'+n.category+'</span></td>' +
+      '<td style="padding:16px 24px;font-size:13px;color:#7e7663;display:none;" class="md:table-cell">'+formatDate(n.date)+'</td>' +
+      '<td style="padding:16px 24px;">' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<button onclick="openEditNotice(\''+n.id+'\')" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#725c00;background:none;border:1px solid #725c00;padding:5px 12px;cursor:pointer;border-radius:4px;" onmouseover="this.style.background=\'#725c00\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'none\';this.style.color=\'#725c00\'"><span class="material-symbols-outlined" style="font-size:14px;">edit</span>EDIT</button>' +
+          '<button onclick="openDeleteModal(\''+n.id+'\',\''+n.title.replace(/'/g,'').slice(0,40)+'...\')" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#ba1a1a;background:none;border:1px solid #ba1a1a;padding:5px 12px;cursor:pointer;border-radius:4px;" onmouseover="this.style.background=\'#ba1a1a\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'none\';this.style.color=\'#ba1a1a\'"><span class="material-symbols-outlined" style="font-size:14px;">delete</span></button>' +
+          '<a href="notice-detail.html?id='+n.id+'" target="_blank" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#5f5e5e;text-decoration:none;border:1px solid #cfc6af;padding:5px 12px;border-radius:4px;" onmouseover="this.style.background=\'#eeeeee\'" onmouseout="this.style.background=\'none\'"><span class="material-symbols-outlined" style="font-size:14px;">open_in_new</span></a>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+  document.querySelectorAll('#notices-board-tbody td:nth-child(2), #notices-board-tbody td:nth-child(3)').forEach(c=>c.style.display='table-cell');
+}
+
+function logActivity(msg) {
+  activityLog.unshift({ msg: msg, time: new Date().toLocaleTimeString() });
+  if (activityLog.length > 6) activityLog.pop();
+  var el = document.getElementById('activity-log');
+  el.innerHTML = activityLog.map(a =>
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #eeeeee;">' +
+      '<span>'+a.msg+'</span><span style="font-size:11px;color:#7e7663;white-space:nowrap;margin-left:8px;">'+a.time+'</span>' +
+    '</div>'
+  ).join('') || '<p style="font-size:13px;color:#7e7663;">No recent activity.</p>';
+}
+
+/* ── BROADCAST ── */
+function openBroadcastModal() { document.getElementById('broadcast-modal').style.display='flex'; }
+function closeBroadcastModal() { document.getElementById('broadcast-modal').style.display='none'; }
+function publishBroadcast() {
+  var title = document.getElementById('bc-title').value.trim();
+  var cat = document.getElementById('bc-category').value;
+  var body = document.getElementById('bc-body').value.trim();
+  var valid = true;
+  if (!title) { document.getElementById('bc-title-error').textContent='Title is required.'; document.getElementById('bc-title-error').style.display='block'; valid=false; } else document.getElementById('bc-title-error').style.display='none';
+  if (!cat) { document.getElementById('bc-category-error').textContent='Category is required.'; document.getElementById('bc-category-error').style.display='block'; valid=false; } else document.getElementById('bc-category-error').style.display='none';
+  if (!body) { document.getElementById('bc-body-error').textContent='Notice body is required.'; document.getElementById('bc-body-error').style.display='block'; valid=false; } else document.getElementById('bc-body-error').style.display='none';
+  if (!valid) return;
+  var urgency = document.getElementById('bc-urgency').value;
+  var dept = document.getElementById('bc-dept').value.trim() || 'Administration';
+  KyuDB.addNotice({ title:title, category:cat, urgency:urgency, author:'KYU Admin', department:dept, snippet:body.slice(0,120), body:body, attachments:[], _dynamic:true });
+  closeBroadcastModal();
+  ['bc-title','bc-category','bc-body','bc-dept'].forEach(id => document.getElementById(id).value='');
+  showToast('Notice published successfully!','success');
+  sendPushNotification('New Notice: '+title, body.slice(0,80));
+  logActivity('Published: '+title.slice(0,30));
+  renderKPIs();
+  renderNoticesBoard();
+}
+
+/* ── APPROVE ── */
+function openApproveModal(subId) {
+  var sub = KyuDB.submissions.find(s=>s.id===subId);
+  if (!sub) return;
+  document.getElementById('ap-sub-id').value = subId;
+  document.getElementById('ap-title').value = sub.title;
+  document.getElementById('ap-category').value = sub.category;
+  document.getElementById('ap-submitter').value = sub.userName + ' <' + sub.userEmail + '>';
+  document.getElementById('ap-body').value = sub.description;
+  document.getElementById('approve-modal').style.display='flex';
+}
+function closeApproveModal() { document.getElementById('approve-modal').style.display='none'; }
+function confirmApprove() {
+  var subId = document.getElementById('ap-sub-id').value;
+  var editedData = {
+    title: document.getElementById('ap-title').value.trim(),
+    category: document.getElementById('ap-category').value.trim(),
+    description: document.getElementById('ap-body').value.trim()
+  };
+  var sub = KyuDB.approveSubmission(subId, editedData);
+  closeApproveModal();
+  if (sub) {
+    simulateEmailSend(sub.userEmail, 'approved', sub.title);
+    sendPushNotification('Notice Approved', '"'+sub.title+'" is now live on the board.');
+    showToast('Submission approved and published!','success');
+    logActivity('Approved: '+sub.title.slice(0,30));
+  }
+  renderQueue();
+  renderKPIs();
+  renderNoticesBoard();
+}
+
+/* ── REJECT ── */
+function openRejectModal(subId) {
+  var sub = KyuDB.submissions.find(s=>s.id===subId);
+  if (!sub) return;
+  document.getElementById('rj-sub-id').value = subId;
+  document.getElementById('reject-notice-title').textContent = '"' + sub.title + '"';
+  document.getElementById('reject-reason').value = '';
+  document.getElementById('reject-modal').style.display='flex';
+}
+function closeRejectModal() { document.getElementById('reject-modal').style.display='none'; }
+function confirmReject() {
+  var reason = document.getElementById('reject-reason').value.trim();
+  var errEl = document.getElementById('reject-reason-error');
+  if (!reason) { errEl.textContent='Please provide a rejection reason.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  var subId = document.getElementById('rj-sub-id').value;
+  var sub = KyuDB.rejectSubmission(subId, reason);
+  closeRejectModal();
+  if (sub) {
+    simulateEmailSend(sub.userEmail, 'rejected', sub.title);
+    showToast('Submission rejected.','error');
+    logActivity('Rejected: '+sub.title.slice(0,30));
+  }
+  renderQueue();
+  renderKPIs();
+}
+
+/* ── DELETE ── */
+function openDeleteModal(noticeId, title) {
+  document.getElementById('del-notice-id').value = noticeId;
+  document.getElementById('delete-notice-title').textContent = title;
+  document.getElementById('delete-modal').style.display='flex';
+}
+function closeDeleteModal() { document.getElementById('delete-modal').style.display='none'; }
+function confirmDelete() {
+  var id = document.getElementById('del-notice-id').value;
+  KyuDB.deleteNotice(id);
+  closeDeleteModal();
+  showToast('Notice deleted.','info');
+  logActivity('Deleted notice #'+id.slice(-6));
+  renderNoticesBoard();
+  renderKPIs();
+}
+
+/* ── EDIT NOTICE (inline-ish via prompt for simplicity) ── */
+function openEditNotice(noticeId) {
+  var notice = KyuDB.getNoticeById(noticeId);
+  if (!notice) return;
+  /* Build inline edit modal */
+  var existing = document.getElementById('edit-modal');
+  if (existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = 'edit-modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(26,28,28,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+  m.innerHTML = '<div style="background:#fff;border-radius:4px;padding:40px;max-width:560px;width:calc(100% - 48px);max-height:90vh;overflow-y:auto;font-family:\'Plus Jakarta Sans\',sans-serif;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;"><div><p style="font-size:11px;letter-spacing:0.1em;font-weight:700;color:#725c00;margin:0 0 6px;">EDIT NOTICE</p><h2 style="font-size:22px;font-weight:700;margin:0;">Edit Notice</h2></div><button onclick="document.getElementById(\'edit-modal\').remove()" style="background:none;border:none;cursor:pointer;"><span class="material-symbols-outlined" style="font-size:24px;color:#5f5e5e;">close</span></button></div>' +
+    '<div style="display:flex;flex-direction:column;gap:14px;">' +
+      '<div><label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">TITLE</label><input id="ed-title" type="text" value="'+notice.title.replace(/"/g,'&quot;')+'" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:15px;font-family:\'Plus Jakarta Sans\',sans-serif;box-sizing:border-box;"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">SNIPPET</label><input id="ed-snippet" type="text" value="'+notice.snippet.replace(/"/g,'&quot;')+'" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:15px;font-family:\'Plus Jakarta Sans\',sans-serif;box-sizing:border-box;"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">URGENCY</label><select id="ed-urgency" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:15px;background:#fff;box-sizing:border-box;"><option value="normal" '+(notice.urgency!=='urgent'?'selected':'')+'>Normal</option><option value="urgent" '+(notice.urgency==='urgent'?'selected':'')+'>Urgent</option></select></div>' +
+      '<div><label style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#5f5e5e;display:block;margin-bottom:6px;">BODY</label><textarea id="ed-body" rows="5" style="width:100%;border:1px solid #cfc6af;border-radius:4px;padding:10px 14px;font-size:14px;font-family:\'Plus Jakarta Sans\',sans-serif;resize:vertical;box-sizing:border-box;">'+notice.body+'</textarea></div>' +
+      '<div style="display:flex;gap:12px;margin-top:8px;">' +
+        '<button onclick="document.getElementById(\'edit-modal\').remove()" style="flex:1;padding:14px;border:1px solid #cfc6af;background:none;font-weight:700;font-size:12px;cursor:pointer;">CANCEL</button>' +
+        '<button onclick="saveEditNotice(\''+noticeId+'\')" style="flex:2;padding:14px;background:#725c00;color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">SAVE CHANGES <span class=\'material-symbols-outlined\' style=\'font-size:16px;\'>save</span></button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(m);
+}
+
+function saveEditNotice(noticeId) {
+  var title = document.getElementById('ed-title').value.trim();
+  var snippet = document.getElementById('ed-snippet').value.trim();
+  var urgency = document.getElementById('ed-urgency').value;
+  var body = document.getElementById('ed-body').value.trim();
+  if (!title) { showToast('Title cannot be empty.','error'); return; }
+  KyuDB.updateNotice(noticeId, { title:title, snippet:snippet, urgency:urgency, body:body });
+  document.getElementById('edit-modal').remove();
+  showToast('Notice updated successfully!','success');
+  logActivity('Edited: '+title.slice(0,30));
+  renderNoticesBoard();
+}
+
+function adminLogout() {
+  localStorage.removeItem('kyu_admin_session');
+  showToast('Logged out of admin session.','info');
+  setTimeout(function(){ window.location.href='discover.html'; }, 1000);
+}
+
+/* close modals on backdrop click */
+['broadcast-modal','approve-modal','reject-modal','delete-modal'].forEach(function(id) {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) this.style.display='none';
+  });
+});
+</script>
+<script src="js/responsive-nav.js"></script>
+</body>
+</html>

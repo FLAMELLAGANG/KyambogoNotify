@@ -1,0 +1,8 @@
+# Netlify configuration — Kyambogo Notify
+# Makes discover.html load at the root URL (/)
+
+[[redirects]]
+  from = "/"
+  to = "/discover.html"
+  status = 200
+  force = true

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="css/tailwind.offline.css">
+<link rel="stylesheet" href="css/responsive.css"> 
+  <!-- Material Symbols: loads from CDN when online, degrades gracefully offline -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"></noscript>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Admin Login | Kyambogo Notify</title>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+      colors: {
+        primary: '#725c00',
+        'primary-fixed': '#ffe07e',
+        'primary-container': '#ebc84e',
+        'on-primary': '#ffffff',
+        'on-primary-fixed': '#231b00',
+        surface: '#f9f9f9',
+        'surface-container': '#eeeeee',
+        'on-surface': '#1a1c1c',
+        secondary: '#5f5e5e',
+        outline: '#7e7663',
+        'outline-variant': '#cfc6af',
+        error: '#ba1a1a',
+        'error-container': '#ffdad6',
+        'on-error': '#ffffff',
+        'on-tertiary-fixed': '#1a1c1c'
+      }
+    }
+  }
+}
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+.shake{animation:shake 0.4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+</style>
+</head>
+<body class="font-sans bg-on-tertiary-fixed min-h-screen flex overflow-hidden">
+
+<!-- Left — Brand Panel -->
+<div class="hidden lg:flex flex-col justify-between w-1/2 bg-on-tertiary-fixed text-white relative overflow-hidden p-16">
+  <!-- Background image -->
+  <img src="images/TTL3.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-20 grayscale">
+  <div class="relative z-10">
+    <div class="flex items-center gap-3 mb-stack-lg">
+      <span class="material-symbols-outlined" style="font-size:28px;color:#e6c44a;">campaign</span>
+      <span class="font-bold text-2xl tracking-tighter text-white">Kyambogo Notify</span>
+    </div>
+  </div>
+  <div class="relative z-10">
+    <span class="text-xs font-bold tracking-widest text-primary-fixed opacity-60 block mb-6">ADMINISTRATION CONSOLE</span>
+    <h1 class="text-[clamp(40px,5vw,72px)] font-bold leading-none tracking-tighter uppercase text-white mb-6">
+      Editorial<br>Control<br>Centre.
+    </h1>
+    <p class="text-white/60 max-w-md text-lg leading-relaxed">
+      Manage the Kyambogo University notice board — moderate submissions, publish announcements, and oversee the campus information flow.
+    </p>
+  </div>
+  <div class="relative z-10 space-y-4">
+    <div class="flex items-center gap-3 text-white/50 text-sm">
+      <span class="material-symbols-outlined" style="font-size:18px;color:#e6c44a;">lock</span>
+      Secured administrative access only
+    </div>
+    <div class="flex items-center gap-3 text-white/50 text-sm">
+      <span class="material-symbols-outlined" style="font-size:18px;color:#e6c44a;">visibility_off</span>
+      Session expires on browser close
+    </div>
+    <div class="flex items-center gap-3 text-white/50 text-sm">
+      <span class="material-symbols-outlined" style="font-size:18px;color:#e6c44a;">shield</span>
+      All actions are logged
+    </div>
+    <div class="pt-4 border-t border-white/10">
+      <a href="discover.html" class="text-white/40 hover:text-white/70 text-sm transition-colors flex items-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+        Return to public site
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Right — Login Form -->
+<div class="flex-1 flex items-center justify-center p-8 lg:p-16 bg-surface min-h-screen relative">
+  <!-- Decorative corner -->
+  <div class="absolute top-0 right-0 w-40 h-40 bg-primary-container opacity-20 rounded-bl-full pointer-events-none"></div>
+
+  <div class="w-full max-w-md relative z-10">
+    <!-- Mobile logo -->
+    <div class="flex items-center gap-2 mb-10 lg:hidden">
+      <span class="material-symbols-outlined text-primary" style="font-size:24px;">campaign</span>
+      <span class="font-bold text-xl tracking-tighter text-on-surface">Kyambogo Notify</span>
+    </div>
+
+    <!-- Form header -->
+    <div class="mb-10">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-2 h-2 bg-primary rounded-full"></div>
+        <span style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#725c00;">SECURE PORTAL</span>
+      </div>
+      <h2 class="text-4xl font-bold tracking-tight text-on-surface mb-2">Admin Sign In</h2>
+      <p class="text-secondary text-base">Enter your administrator credentials to access the dashboard.</p>
+    </div>
+
+    <!-- Credentials hint (for demo/academic) -->
+    <div class="bg-primary-container/30 border border-primary-container rounded-lg p-4 mb-8 flex items-start gap-3">
+      <span class="material-symbols-outlined text-primary mt-0.5" style="font-size:18px;">info</span>
+      <div>
+        <p class="font-bold text-sm text-on-surface mb-1">Demo Credentials</p>
+        <p class="text-xs text-secondary leading-relaxed">
+          Username: <code class="bg-surface-container px-1.5 py-0.5 rounded font-bold text-on-surface">kyu_admin</code><br>
+          Password: <code class="bg-surface-container px-1.5 py-0.5 rounded font-bold text-on-surface">KyU@Notify2026!</code>
+        </p>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="admin-login-form" onsubmit="handleLogin(event)" class="space-y-6" novalidate>
+
+      <!-- Username -->
+      <div>
+        <label for="username" class="block text-sm font-bold text-secondary mb-2 tracking-wide uppercase" style="font-size:11px;letter-spacing:0.08em;">Username</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary" style="font-size:20px;">person</span>
+          <input type="text" id="username" autocomplete="username" placeholder="Enter admin username"
+            class="w-full pl-12 pr-4 py-4 bg-white border border-outline-variant rounded-xl text-on-surface text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+            required>
+        </div>
+        <p id="username-error" class="text-error text-xs mt-1.5 font-semibold hidden flex items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:14px;">error</span>
+          Username is required.
+        </p>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-bold text-secondary mb-2 tracking-wide uppercase" style="font-size:11px;letter-spacing:0.08em;">Password</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary" style="font-size:20px;">lock</span>
+          <input type="password" id="password" autocomplete="current-password" placeholder="Enter password"
+            class="w-full pl-12 pr-12 py-4 bg-white border border-outline-variant rounded-xl text-on-surface text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+            required>
+          <button type="button" id="toggle-password" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface transition-colors">
+            <span id="pw-icon" class="material-symbols-outlined" style="font-size:20px;">visibility</span>
+          </button>
+        </div>
+        <p id="password-error" class="text-error text-xs mt-1.5 font-semibold hidden flex items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:14px;">error</span>
+          Password is required.
+        </p>
+      </div>
+
+      <!-- Credentials Error Alert -->
+      <div id="login-error" class="hidden bg-error-container border border-error/20 rounded-xl p-4 flex items-center gap-3">
+        <span class="material-symbols-outlined text-error flex-shrink-0" style="font-size:20px;">cancel</span>
+        <div>
+          <p class="font-bold text-sm text-on-surface">Invalid credentials</p>
+          <p class="text-xs text-secondary mt-0.5">Please check your username and password and try again.</p>
+        </div>
+      </div>
+
+      <!-- Attempts warning -->
+      <div id="attempts-warning" class="hidden bg-surface-container border border-outline-variant/30 rounded-xl p-4 flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size:20px;">warning</span>
+        <p id="attempts-text" class="text-sm text-secondary font-semibold"></p>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="submit-btn"
+        class="w-full bg-primary hover:opacity-90 text-on-primary font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 active:scale-95 text-sm tracking-widest uppercase">
+        <span id="submit-text">Sign In to Dashboard</span>
+        <span id="submit-icon" class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+        <span id="submit-spinner" class="hidden">
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+      </button>
+
+    </form>
+
+    <!-- Footer links -->
+    <div class="mt-8 flex items-center justify-between text-sm text-secondary">
+      <a href="discover.html" class="hover:text-on-surface transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+        Public site
+      </a>
+      <button onclick="fillDemoCredentials()" class="text-primary hover:underline font-semibold">
+        Use demo credentials
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+var loginAttempts = 0;
+var isLocked = false;
+var lockTimer = null;
+
+/* If already logged in, redirect immediately */
+if (localStorage.getItem('kyu_admin_session') === 'true') {
+  window.location.href = 'admin-dashboard.html';
+}
+
+function togglePassword() {
+  var input = document.getElementById('password');
+  var icon = document.getElementById('pw-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility';
+  }
+}
+
+function fillDemoCredentials() {
+  document.getElementById('username').value = 'kyu_admin';
+  document.getElementById('password').value = 'KyU@Notify2026!';
+  /* clear any errors */
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('username-error').classList.add('hidden');
+  document.getElementById('password-error').classList.add('hidden');
+  document.getElementById('username').style.borderColor = '';
+  document.getElementById('password').style.borderColor = '';
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  if (isLocked) return;
+
+  var username = document.getElementById('username').value.trim();
+  var password = document.getElementById('password').value.trim();
+  var userErr = document.getElementById('username-error');
+  var passErr = document.getElementById('password-error');
+  var loginErr = document.getElementById('login-error');
+  var attemptsWarn = document.getElementById('attempts-warning');
+
+  /* Clear errors */
+  userErr.classList.add('hidden');
+  passErr.classList.add('hidden');
+  loginErr.classList.add('hidden');
+  document.getElementById('username').style.borderColor = '';
+  document.getElementById('password').style.borderColor = '';
+
+  /* Validate presence */
+  var valid = true;
+  if (!username) {
+    userErr.classList.remove('hidden');
+    document.getElementById('username').style.borderColor = '#ba1a1a';
+    valid = false;
+  }
+  if (!password) {
+    passErr.classList.remove('hidden');
+    document.getElementById('password').style.borderColor = '#ba1a1a';
+    valid = false;
+  }
+  if (!valid) return;
+
+  /* Loading state */
+  setLoading(true);
+
+  /* Simulate async check */
+  setTimeout(function() {
+    setLoading(false);
+
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+      /* SUCCESS */
+      loginAttempts = 0;
+      attemptsWarn.classList.add('hidden');
+
+      /* Show success state on button */
+      var btn = document.getElementById('submit-btn');
+      btn.style.background = '#1a7c3a';
+      document.getElementById('submit-text').textContent = 'Access Granted';
+      document.getElementById('submit-icon').textContent = 'check_circle';
+
+      localStorage.setItem('kyu_admin_session', 'true');
+
+      setTimeout(function() {
+        window.location.href = 'admin-dashboard.html';
+      }, 800);
+
+    } else {
+      /* FAIL */
+      loginAttempts++;
+      loginErr.classList.remove('hidden');
+      document.getElementById('username').style.borderColor = '#ba1a1a';
+      document.getElementById('password').style.borderColor = '#ba1a1a';
+
+      /* Shake the form */
+      var form = document.getElementById('admin-login-form');
+      form.classList.add('shake');
+      setTimeout(function() { form.classList.remove('shake'); }, 400);
+
+      /* Clear password */
+      document.getElementById('password').value = '';
+
+      /* Attempts feedback */
+      if (loginAttempts >= 2) {
+        attemptsWarn.classList.remove('hidden');
+        var remaining = Math.max(0, 5 - loginAttempts);
+        document.getElementById('attempts-text').textContent =
+          loginAttempts >= 5
+            ? 'Too many failed attempts. Please wait 30 seconds.'
+            : remaining + ' attempt' + (remaining !== 1 ? 's' : '') + ' remaining before temporary lock.';
+
+        if (loginAttempts >= 5) {
+          lockAccount();
+        }
+      }
+    }
+  }, 900);
+}
+
+function lockAccount() {
+  isLocked = true;
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  btn.style.cursor = 'not-allowed';
+  document.getElementById('submit-text').textContent = 'Locked (30s)';
+  document.getElementById('submit-icon').textContent = 'lock';
+
+  var countdown = 30;
+  lockTimer = setInterval(function() {
+    countdown--;
+    document.getElementById('submit-text').textContent = 'Locked (' + countdown + 's)';
+    document.getElementById('attempts-text').textContent = 'Account temporarily locked. Please wait ' + countdown + ' seconds.';
+    if (countdown <= 0) {
+      clearInterval(lockTimer);
+      isLocked = false;
+      loginAttempts = 0;
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      btn.style.background = '';
+      document.getElementById('submit-text').textContent = 'Sign In to Dashboard';
+      document.getElementById('submit-icon').textContent = 'arrow_forward';
+      document.getElementById('attempts-warning').classList.add('hidden');
+      document.getElementById('login-error').classList.add('hidden');
+    }
+  }, 1000);
+}
+
+function setLoading(loading) {
+  var btn = document.getElementById('submit-btn');
+  var icon = document.getElementById('submit-icon');
+  var spinner = document.getElementById('submit-spinner');
+  var text = document.getElementById('submit-text');
+  if (loading) {
+    btn.disabled = true;
+    btn.style.opacity = '0.85';
+    icon.classList.add('hidden');
+    spinner.classList.remove('hidden');
+    text.textContent = 'Verifying...';
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    spinner.classList.add('hidden');
+    icon.classList.remove('hidden');
+    text.textContent = 'Sign In to Dashboard';
+  }
+}
+
+/* Allow Enter key throughout form */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !isLocked) {
+    var form = document.getElementById('admin-login-form');
+    if (form) handleLogin(new Event('submit'));
+  }
+});
+</script>
+<script src="js/responsive-nav.js"></script>
+</body>
+</html>

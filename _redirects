@@ -1,0 +1,4 @@
+# Netlify Redirects — Kyambogo Notify
+# Redirect the root URL to discover.html without changing the file name
+
+/   /discover.html   200
