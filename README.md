@@ -308,7 +308,7 @@ This project was developed as a Final Year Project at Uganda Institute of Inform
 | NAKATUDDE VIVIAN | 2024/DITB/DAY/1389/G |
 | AYEBARE JASPER| 2024/DITB/DAY/1459/G |
 
-**Supervisor:** Wansuzi Zubairi  
+**Supervisor:** Wanzusi Zubairi  
 **Institution:** Uganda Institute of Information and Communications Technology (UICT)  
 **Department:** ICT and Engineering  
 **Year:** June 2026
