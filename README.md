@@ -303,10 +303,10 @@ This project was developed as a Final Year Project at Uganda Institute of Inform
 
 | Name | Registration Number |
 |---|---|
-| MALANGA BRIAN	 | [2024/DITB/DAY/1834/G] |
-| [ASHABA ANGEL CHERISE] | [2024/DITB/DAY/1870/G] |
-| [NAKATUDDE VIVIAN] | [2024/DITB/DAY/1389/G] |
-| [AYEBARE JASPER] | [2024/DITB/DAY/1459/G] |
+| MALANGA BRIAN	 | 2024/DITB/DAY/1834/G |
+| ASHABA ANGEL CHERISE | 2024/DITB/DAY/1870/G |
+| NAKATUDDE VIVIAN | 2024/DITB/DAY/1389/G |
+| AYEBARE JASPER| 2024/DITB/DAY/1459/G |
 
 **Supervisor:** Wansuzi Zubairi  
 **Institution:** Uganda Institute of Information and Communications Technology (UICT)  
